@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/Quiz.dart';
 
-import './answerButton.dart';
-import './question.dart'; // use './' to search in the same folder as this file
+import 'FinalScore.dart';
 
-void main() {
-  //runs automatically when the app launches
+main() => runApp(myClass());
 
-  runApp(myClass());
-
-  /* runapp is a function provided by flutter
+/* runapp is a function provided by flutter
   Inflate the given widget and attach it to the screen.
-  it calls build() method in the widget for us
   This function takes the widget object you pass to it and
   ensures that the widget tree of that widget gets created.*/
-}
 
 /*dynamic: can change TYPE of the variable, & can change VALUE of the variable later in code.
 var: can't change TYPE of the variable, but can change the VALUE of the variable later in code. '
@@ -22,10 +17,10 @@ var: can't change TYPE of the variable, but can change the VALUE of the variable
 /*Type inference is the automatic deduction of the data types of specific expressions in a programming language,
 usually done at compile time.*/
 
-class myClass extends StatefulWidget { // Stateful Widget is rebuilt when the widget’s configuration changes but State class persist.
-  @override                            // rebuilt means new object is created in widget tree
+class myClass extends StatefulWidget {
+  // Stateful Widget is rebuilt when the widget’s configuration changes but State class persist.
+  @override // rebuilt means new object is created in widget tree
   State<StatefulWidget> createState() {
-
     //type parameters provide a way for you to re-use the class with different type inputs.
     /*Stateful Widgets are dynamic widgets. They can be updated during runtime based on user action or data change.
    Stateful Widgets have an internal state and can re-render if the input data changes or
@@ -36,11 +31,47 @@ class myClass extends StatefulWidget { // Stateful Widget is rebuilt when the wi
 }
 
 class _myClassState extends State<myClass> {
+  int score = 0;
   var questionNo = 0;
-  var questionsList = ["question 1", "question 2"];
+  var questionsList = [
+    {
+      'questionText': 'what is your name?',
+      'answerText': [
+        {'text': 'john cena', 'score': 3},
+        {'text': 'thanos', 'score': 3},
+        {'text': 'avanger', 'score': 3},
+        {'text': 'spderman', 'score': 3}
+      ]
+    },
+    {
+      'questionText': 'what is your age?',
+      'answerText': [
+        {'text': '0-10', 'score': 3},
+        {'text': '11-50', 'score': 5},
+        {'text': '50-100', 'score': 4}
+      ]
+    },
+    {
+      'questionText': 'what is your gender?',
+      'answerText': [
+        {'text': 'male', 'score': 1},
+        {'text': 'female', 'score': 4},
+        {'text': 'others', 'score': 10}
+      ]
+    },
+  ];
 
-  void buttonPressed() {
+  void restartQuiz(){
+
+    setState(() {
+      score = 0;
+      questionNo = 0;
+    });
+  }
+
+  void buttonPressed(int score) {
     //setState takes an anonymous function which has potential to change the internal state of the program
+    this.score += score;
     setState(() {
       //Calling setState notifies the framework that the internal state of this object has changed in a way that might impact the user interface in this subtree,
       // which causes the framework to schedule a build for this State object.
@@ -66,21 +97,14 @@ class _myClassState extends State<myClass> {
       home: Scaffold(
         //The Scaffold is a widget in Flutter used to implements the basic material design visual layout structure.
         appBar: AppBar(
-          title: const Text('This is title'),
+          title: Text('This is title'),
         ),
-        body: Column(
-          children: /*dont have to type cast cz of type inference*/
-              [
-            Question(questionsList[questionNo]),
-            // constructor of Question.dart file that has build() method which return the text
-            // it is a state less widget, whole widget is rebuild when we run the constructor
-
-
-            ButtonManager(buttonPressed), //passing a function to a separate class widget
-            ButtonManager(buttonPressed),
-            ButtonManager(buttonPressed),
-          ],
-        ),
+        body: questionNo < questionsList.length
+            ? Quiz(
+                buttonPressed: buttonPressed,
+                questionNo: questionNo,
+                questionsList: questionsList)
+            : Score(score, restartQuiz),
       ),
     );
   }
